@@ -37,5 +37,84 @@ namespace ToDo.Web.Mvc.Controllers
 
             return View(createItemModel);
         }
+
+        public async Task<IActionResult> Delete(Guid? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var item = await repository.GetAsync(id.Value);
+            
+            var model = new ItemModel();
+            model.Id = item.Id;
+            model.Description = item.Description;
+            model.Done = item.Done;
+            model.CreatedAt = item.CreatedAt;
+            
+            return View(model);
+        }
+        
+        public async Task<IActionResult> MarkAsDone(Guid? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var item = await repository.GetAsync(id.Value);
+            
+            var model = new ItemModel();
+            model.Id = item.Id;
+            model.Description = item.Description;
+            model.Done = item.Done;
+            model.CreatedAt = item.CreatedAt;
+            
+            return View(model);
+        }
+        
+        public async Task<IActionResult> MarkAsUndone(Guid? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var item = await repository.GetAsync(id.Value);
+            
+            var model = new ItemModel();
+            model.Id = item.Id;
+            model.Description = item.Description;
+            model.Done = item.Done;
+            model.CreatedAt = item.CreatedAt;
+            
+            return View(model);
+        }
+        
+        [HttpPost]
+        public async Task<IActionResult> Delete([Bind("Id")] ItemModel itemModel)
+        {
+            await repository.DeleteAsync(itemModel.Id);
+            return RedirectToAction(nameof(Index));
+        }
+        
+        [HttpPost]
+        public async Task<IActionResult> MarkAsDone([Bind("Id")] ItemModel itemModel)
+        {
+            var item = await repository.GetAsync(itemModel.Id);
+            item.MarkAsDone();
+            await repository.EditAsync(item);
+            return RedirectToAction(nameof(Index));
+        }
+        
+        [HttpPost]
+        public async Task<IActionResult> MarkAsUndone([Bind("Id")] ItemModel itemModel)
+        {
+            var item = await repository.GetAsync(itemModel.Id);
+            item.MarkAsUndone();
+            await repository.EditAsync(item);
+            return RedirectToAction(nameof(Index));
+        }
     }
 }

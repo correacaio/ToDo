@@ -12,6 +12,12 @@ namespace ToDo.Domain.Entities
         {
 
         }
+
+        public Item(Guid id)
+        {
+            Id = id;
+        }
+        
         public Item(string task)
         {
             Id = Guid.NewGuid();
@@ -32,7 +38,7 @@ namespace ToDo.Domain.Entities
         //}
 
         public void MarkAsDone() => Done = true;
-        public void MarkAsUndone() => Done = true;
+        public void MarkAsUndone() => Done = false;
 
 
     }

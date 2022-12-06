@@ -13,7 +13,8 @@
         <tr class="">
             <th>Descrição</th>
             <th>Data de criação</th>
-            <th>Status</th>
+            <th>Concluido</th>
+            <th>Operacoes</th>
         </tr>
     </thead>
     <tbody>
@@ -22,7 +23,14 @@
             <tr>
                 <td>@item.Description</td>
                 <td>@item.CreatedAt.ToString("dd/MM/yyyy HH:mm")</td>
-                <td><input type="checkbox" disabled @( item.Done ? "checked" : "" ) action="" /></td>
+                <td>
+                    <input type="checkbox" disabled @( item.Done ? "checked" : "" ) />
+                </td>
+                <td>
+                    <a asp-action="Delete" asp-route-id="@item.Id">Apagar</a>
+                    <a asp-action="MarkAsDone" asp-route-id="@item.Id" hidden="@(item.Done)">Concluir</a>
+                    <a asp-action="MarkAsUndone" asp-route-id="@item.Id" hidden="@(!item.Done)">Desconcluir</a>
+                </td>
             </tr>
         }
     </tbody>

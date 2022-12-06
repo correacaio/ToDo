@@ -1,0 +1,26 @@
+﻿@model ToDo.Web.Mvc.Models.ItemModel
+
+@{
+    ViewData["Title"] = "Concluido";
+}
+
+<p class="text-danger">@ViewData["ConcurrencyErrorMessage"]</p>
+
+<h3>Você realmente marcar como concluido?</h3>
+<div>
+    <h4>Tarefa</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">Descricao</dt>
+        <dd class="col-sm-10">@Html.DisplayFor(model => model.Description)</dd>
+        <dt class="col-sm-2">Data Criacao</dt>
+        <dd class="col-sm-10">@Html.DisplayFor(model => model.CreatedAt)</dd>
+    </dl>
+    <form method="post" asp-action="MarkAsDone">
+        <input type="hidden" asp-for="Id"/>
+        <div class="form-actions no-color">
+            <input type="submit" formmethod="post" value="Confirmar" class="btn btn-default"/> |
+            <a asp-action="Index">Voltar</a>
+        </div>
+    </form>
+</div>

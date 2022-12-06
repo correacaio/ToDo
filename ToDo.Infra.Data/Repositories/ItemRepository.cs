@@ -1,7 +1,6 @@
-﻿using Dapper;
+﻿using System.Data.SqlClient;
+using Dapper;
 using Microsoft.Extensions.Configuration;
-using System.Data.Common;
-using System.Data.SqlClient;
 using ToDo.Domain.Entities;
 using ToDo.Domain.Interface;
 
@@ -20,23 +19,46 @@ namespace ToDo.Infra.Data.Repositories
             IEnumerable<Item> result;
             var query = "select * from Items";
             using (var con = new SqlConnection(connectionString))
-            {   
+            {
                 try
                 {
                     con.Open();
                     result = await con.QueryAsync<Item>(query);
                 }
-                catch (Exception)
+                catch(Exception e)
                 {
-                    throw;
+                    await con.ExecuteAsync("create table Items( Id uniqueidentifier not null primary key, Description varchar(256) not null, Done bit not null, CreatedAt Datetime not null);");
+                    return await GetAllAsync();
                 }
                 finally
                 {
                     con.Close();
                 }
                 return result;
-            };
-
+            }
+        }
+        
+        public async Task<Item> GetAsync(Guid id)
+        {
+            Item result;
+            var query = "select * from Items where Id = '" + id +"'";
+            using (var con = new SqlConnection(connectionString))
+            {
+                try
+                {
+                    con.Open();
+                    result = await con.QueryFirstAsync<Item>(query);
+                }
+                catch(Exception e)
+                {
+                    throw e;
+                }
+                finally
+                {
+                    con.Close();
+                }
+                return result;
+            }
         }
 
         public async Task AddAsync(Item item)
@@ -49,21 +71,17 @@ namespace ToDo.Infra.Data.Repositories
                     con.Open();
                     await con.ExecuteAsync(query, item);
                 }
-                catch (Exception)
-                {
-                    throw;
-                }
                 finally
                 {
                     con.Close();
                 }
-            };
+            }
         }
 
         public async Task EditAsync(Item item)
         {
             var count = 0;
-            var query = "update Items set Description = @Description, Done = @Done where id = @Id";
+            var query = "update Items set Description = @Description, Done = @Done where Id = @Id";
             using (var con = new SqlConnection(connectionString))
             {
                 try
@@ -71,15 +89,32 @@ namespace ToDo.Infra.Data.Repositories
                     con.Open();
                     count = await con.ExecuteAsync(query, item);
                 }
-                catch (Exception)
+                finally
                 {
-                    throw;
+                    con.Close();
+                }
+            }
+        }
+        
+        public async Task DeleteAsync(Guid id)
+        {
+            var query = "delete from Items where Id = '" + id + "'";
+            using (var con = new SqlConnection(connectionString))
+            {
+                try
+                {
+                    con.Open();
+                    await con.ExecuteAsync(query);
+                }
+                catch(Exception e)
+                {
+                    throw e;
                 }
                 finally
                 {
                     con.Close();
                 }
-            };
+            }
         }
     }
 }
